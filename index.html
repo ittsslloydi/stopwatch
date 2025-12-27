@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clock App - Timer, Stopwatch & Alarm</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Dashboard Page -->
+        <div id="dashboard" class="page active">
+            <div class="dashboard-content">
+                <h1 class="app-title">Clock App</h1>
+                
+                <div class="cards-grid">
+                    <div class="feature-card" data-feature="stopwatch">
+                        <div class="card-icon">⏱️</div>
+                        <h2>Stopwatch</h2>
+                        <p class="short-desc">Track elapsed time with precision. Record multiple lap times and review your performance.</p>
+                    </div>
+                    
+                    <div class="feature-card" data-feature="timer">
+                        <div class="card-icon">⏲️</div>
+                        <h2>Timer</h2>
+                        <p class="short-desc">Set countdown timers with custom durations. Choose from quick presets or configure your own time.</p>
+                    </div>
+                    
+                    <div class="feature-card" data-feature="alarm">
+                        <div class="card-icon">🕐</div>
+                        <h2>Alarm</h2>
+                        <p class="short-desc">Create recurring alarms with custom labels. Set multiple alarms for different days and manage them easily.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stopwatch Page -->
+        <div id="stopwatch" class="page">
+            <div class="header">
+                <button class="back-btn" data-back-to="dashboard">← Back</button>
+                <h1>Stopwatch</h1>
+                <div class="spacer"></div>
+            </div>
+
+            <div class="stopwatch-container">
+                <div class="time-display" id="stopwatchDisplay">00:00:00.00</div>
+                
+                <div class="controls">
+                    <button class="control-btn start-btn" id="stopwatchStart">Start</button>
+                    <button class="control-btn lap-btn" id="stopwatchLap">Lap</button>
+                    <button class="control-btn reset-btn" id="stopwatchReset">Reset</button>
+                </div>
+
+                <div class="laps-container">
+                    <h3>Laps</h3>
+                    <div class="laps-list" id="lapsList"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timer Page -->
+        <div id="timer" class="page">
+            <div class="header">
+                <button class="back-btn" data-back-to="dashboard">← Back</button>
+                <h1>Timer</h1>
+                <div class="spacer"></div>
+            </div>
+
+            <div class="timer-container">
+                <!-- Timer View -->
+                <div class="timer-view" id="timerMainView">
+                    <div class="time-display" id="timerDisplay">00:00:00</div>
+                    
+                    <div class="timer-controls">
+                        <button class="control-btn play-btn" id="timerStart">Start</button>
+                        <button class="control-btn pause-btn hidden" id="timerPause">Pause</button>
+                        <button class="control-btn reset-btn" id="timerReset">Reset</button>
+                    </div>
+
+                    <button class="control-btn" id="timerEditBtn">Edit Timer</button>
+                </div>
+
+                <!-- Timer Selection View -->
+                <div class="timer-selection hidden" id="timerSelectionView">
+                    <div class="presets-grid">
+                        <div class="preset-card" data-seconds="60">
+                            <div class="preset-time">1 min</div>
+                        </div>
+                        <div class="preset-card" data-seconds="180">
+                            <div class="preset-time">3 min</div>
+                        </div>
+                        <div class="preset-card" data-seconds="300">
+                            <div class="preset-time">5 min</div>
+                        </div>
+                        <div class="preset-card" data-seconds="600">
+                            <div class="preset-time">10 min</div>
+                        </div>
+                    </div>
+
+                    <div class="custom-timer">
+                        <h3>Custom Timer</h3>
+                        <div class="custom-input-group">
+                            <div class="input-group">
+                                <input type="number" id="customHours" min="0" max="23" placeholder="Hours">
+                                <span>h</span>
+                            </div>
+                            <div class="input-group">
+                                <input type="number" id="customMinutes" min="0" max="59" placeholder="Minutes">
+                                <span>m</span>
+                            </div>
+                            <div class="input-group">
+                                <input type="number" id="customSeconds" min="0" max="59" placeholder="Seconds">
+                                <span>s</span>
+                            </div>
+                        </div>
+                        <button class="control-btn" id="timerConfirmBtn">Set Timer</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alarm Page -->
+        <div id="alarm" class="page">
+            <div class="header">
+                <button class="back-btn" data-back-to="dashboard">← Back</button>
+                <h1>Alarm</h1>
+                <div class="spacer"></div>
+            </div>
+
+            <div class="alarm-container">
+                <div class="alarm-list-container">
+                    <div class="alarms-header">
+                        <h3>Alarms</h3>
+                        <button class="add-alarm-btn" id="addAlarmBtn">+ Add</button>
+                    </div>
+
+                    <div class="alarms-list" id="alarmsList"></div>
+
+                    <div class="empty-state" id="emptyAlarms">
+                        <p>No alarms set</p>
+                    </div>
+                </div>
+
+                <!-- Add/Edit Alarm Modal -->
+                <div class="modal hidden" id="alarmModal">
+                    <div class="modal-content alarm-modal">
+                        <div class="modal-header">
+                            <h2 id="modalTitle">Add Alarm</h2>
+                            <button class="close-btn" id="closeModalBtn">✕</button>
+                        </div>
+
+                        <div class="modal-body">
+                            <!-- Time Picker with Spinners -->
+                            <div class="time-picker-container">
+                                <div class="time-spinner-group">
+                                    <button class="spinner-btn up-btn" data-spinnerType="hour">∧</button>
+                                    <div class="time-display-box">
+                                        <input type="number" id="alarmHours" min="0" max="23" placeholder="00" class="hour-input">
+                                    </div>
+                                    <button class="spinner-btn down-btn" data-spinnerType="hour">∨</button>
+                                </div>
+                                <div class="time-separator">:</div>
+                                <div class="time-spinner-group">
+                                    <button class="spinner-btn up-btn" data-spinnerType="minute">∧</button>
+                                    <div class="time-display-box">
+                                        <input type="number" id="alarmMinutes" min="0" max="59" placeholder="00" class="minute-input">
+                                    </div>
+                                    <button class="spinner-btn down-btn" data-spinnerType="minute">∨</button>
+                                </div>
+                                <div class="meridiem-group">
+                                    <button class="spinner-btn up-btn" data-spinnerType="meridiem">∧</button>
+                                    <div class="time-display-box meridiem-box">
+                                        <span id="alarmMeridiem">AM</span>
+                                    </div>
+                                    <button class="spinner-btn down-btn" data-spinnerType="meridiem">∨</button>
+                                </div>
+                            </div>
+
+                            <!-- Label -->
+                            <div class="form-group">
+                                <label class="form-label">Label</label>
+                                <input type="text" id="alarmLabel" placeholder="e.g., Good morning" class="label-input">
+                            </div>
+
+                            <!-- Days Selector -->
+                            <div class="form-group">
+                                <label class="form-label">Repeat Alarm</label>
+                                <div class="days-selector">
+                                    <label class="day-checkbox">
+                                        <input type="checkbox" value="0"><span>Su</span>
+                                    </label>
+                                    <label class="day-checkbox">
+                                        <input type="checkbox" value="1"><span>M</span>
+                                    </label>
+                                    <label class="day-checkbox">
+                                        <input type="checkbox" value="2"><span>Tu</span>
+                                    </label>
+                                    <label class="day-checkbox">
+                                        <input type="checkbox" value="3"><span>W</span>
+                                    </label>
+                                    <label class="day-checkbox">
+                                        <input type="checkbox" value="4"><span>Th</span>
+                                    </label>
+                                    <label class="day-checkbox">
+                                        <input type="checkbox" value="5"><span>F</span>
+                                    </label>
+                                    <label class="day-checkbox">
+                                        <input type="checkbox" value="6"><span>Sa</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Chimes Dropdown -->
+                            <div class="form-group">
+                                <label class="form-label" for="alarmChimes">Chimes</label>
+                                <select id="alarmChimes" class="form-select">
+                                    <option value="chimes">Chimes</option>
+                                    <option value="bells">Bells</option>
+                                    <option value="beep">Beep</option>
+                                    <option value="alarm">Alarm</option>
+                                    <option value="gentle">Gentle Wake</option>
+                                </select>
+                            </div>
+
+                            <!-- Snooze Duration Dropdown -->
+                            <div class="form-group">
+                                <label class="form-label" for="alarmSnooze">Snooze Duration</label>
+                                <select id="alarmSnooze" class="form-select">
+                                    <option value="5">5 minutes</option>
+                                    <option value="10" selected>10 minutes</option>
+                                    <option value="15">15 minutes</option>
+                                    <option value="20">20 minutes</option>
+                                    <option value="30">30 minutes</option>
+                                    <option value="60">1 hour</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button class="modal-btn cancel-btn" id="cancelAlarmBtn">Cancel</button>
+                            <button class="modal-btn save-btn" id="saveAlarmBtn">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
